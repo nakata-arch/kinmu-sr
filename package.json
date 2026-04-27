@@ -13,10 +13,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "db:apply": "node --env-file=.env.local scripts/db-apply.mjs",
+    "db:types": "node --env-file=.env.local scripts/db-types.mjs",
     "db:link": "supabase link --project-ref bnqsxdyckzezxyvvkgxt",
     "db:push": "supabase db push",
-    "db:reset": "supabase db reset --linked",
-    "db:types": "supabase gen types typescript --linked > src/types/database.ts"
+    "db:reset": "supabase db reset --linked"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
