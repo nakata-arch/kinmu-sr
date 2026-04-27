@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npx supabase *)",
+      "Bash(git --version)",
+      "Bash(git config *)",
+      "Bash(mkdir -p /tmp/kinmu-sr-stash)",
+      "Bash(mv CLAUDE.md SPEC.md /tmp/kinmu-sr-stash/)",
+      "Bash(npx --yes create-next-app@latest . --typescript --tailwind --app --eslint --src-dir --import-alias \"@/*\" --use-npm --turbopack --no-git --yes)"
+    ]
+  }
+}
