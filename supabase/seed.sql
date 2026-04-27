@@ -1,0 +1,2 @@
+-- Seed data for local/dev only. Applied by `supabase db reset`.
+-- Add tenant / workplace / employee fixtures here once migrations exist.
