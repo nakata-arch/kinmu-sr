@@ -734,7 +734,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      apply_punch: {
+        Args: {
+          p_client_ip?: string
+          p_employee_id?: string
+          p_punch_method?: string
+          p_punch_type: string
+          p_token?: string
+          p_user_agent?: string
+          p_workplace_slug?: string
+        }
+        Returns: Json
+      }
+      current_user_is_org_wide: { Args: never; Returns: boolean }
+      current_user_role: {
+        Args: never
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
+      current_user_tenant_id: { Args: never; Returns: string }
+      current_user_workplace_id: { Args: never; Returns: string }
     }
     Enums: {
       attendance_status:

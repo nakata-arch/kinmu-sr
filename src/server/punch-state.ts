@@ -12,6 +12,37 @@ export interface TodayPunchSnapshot {
   onBreakStartedAt: string | null;
 }
 
+export interface RawSnapshot {
+  clock_in_at: string | null;
+  clock_out_at: string | null;
+  open_break_started_at: string | null;
+}
+
+export const EMPTY_SNAPSHOT: TodayPunchSnapshot = {
+  state: 'not_started',
+  clockInAt: null,
+  clockOutAt: null,
+  onBreakStartedAt: null,
+};
+
+const fmt = (iso: string | null) =>
+  iso ? formatInTimeZone(new Date(iso), TZ, 'HH:mm') : null;
+
+export function buildSnapshot(raw: RawSnapshot): TodayPunchSnapshot {
+  return {
+    state: determineState({
+      clockInAt: raw.clock_in_at ? new Date(raw.clock_in_at) : null,
+      clockOutAt: raw.clock_out_at ? new Date(raw.clock_out_at) : null,
+      openBreakStartedAt: raw.open_break_started_at
+        ? new Date(raw.open_break_started_at)
+        : null,
+    }),
+    clockInAt: fmt(raw.clock_in_at),
+    clockOutAt: fmt(raw.clock_out_at),
+    onBreakStartedAt: fmt(raw.open_break_started_at),
+  };
+}
+
 export async function loadTodaySnapshot(employeeId: string): Promise<TodayPunchSnapshot> {
   const supabase = createAdminClient();
   const workDate = formatInTimeZone(new Date(), TZ, 'yyyy-MM-dd');
@@ -36,19 +67,9 @@ export async function loadTodaySnapshot(employeeId: string): Promise<TodayPunchS
     openBreakRaw = openBreak?.started_at ?? null;
   }
 
-  const state = determineState({
-    clockInAt: rec?.clock_in_at ? new Date(rec.clock_in_at) : null,
-    clockOutAt: rec?.clock_out_at ? new Date(rec.clock_out_at) : null,
-    openBreakStartedAt: openBreakRaw ? new Date(openBreakRaw) : null,
+  return buildSnapshot({
+    clock_in_at: rec?.clock_in_at ?? null,
+    clock_out_at: rec?.clock_out_at ?? null,
+    open_break_started_at: openBreakRaw,
   });
-
-  const fmt = (iso: string | null | undefined) =>
-    iso ? formatInTimeZone(new Date(iso), TZ, 'HH:mm') : null;
-
-  return {
-    state,
-    clockInAt: fmt(rec?.clock_in_at),
-    clockOutAt: fmt(rec?.clock_out_at),
-    onBreakStartedAt: fmt(openBreakRaw),
-  };
 }

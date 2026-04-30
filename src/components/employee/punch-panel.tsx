@@ -29,9 +29,11 @@ interface Props {
     | { kind: 'shared_pc'; workplaceSlug: string; employeeId: string };
 }
 
-export function PunchPanel({ employeeName, snapshot, identifier }: Props) {
+export function PunchPanel({ employeeName, snapshot: initial, identifier }: Props) {
+  const [snapshot, setSnapshot] = useState<TodayPunchSnapshot>(initial);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
   const allowed = new Set(allowedPunches(snapshot.state));
 
   const submit = (type: PunchType) => {
@@ -46,7 +48,11 @@ export function PunchPanel({ employeeName, snapshot, identifier }: Props) {
     }
     startTransition(async () => {
       const res = await punchAction(fd);
-      if ('error' in res) setError(res.error);
+      if ('error' in res) {
+        setError(res.error);
+      } else {
+        setSnapshot(res.snapshot);
+      }
     });
   };
 
