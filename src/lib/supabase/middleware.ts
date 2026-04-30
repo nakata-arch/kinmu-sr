@@ -13,6 +13,13 @@ function isPublicPath(pathname: string): boolean {
 }
 
 export async function updateSession(request: NextRequest) {
+  // Public paths (token URLs, shared-PC URLs, login flow) never need
+  // a session refresh — short-circuit before touching Supabase to save
+  // a network round-trip on every employee punch.
+  if (isPublicPath(request.nextUrl.pathname)) {
+    return NextResponse.next({ request });
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient<Database>(
