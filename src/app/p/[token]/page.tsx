@@ -16,7 +16,7 @@ export default async function PunchByTokenPage({ params }: Props) {
 
   const { data: employee } = await supabase
     .from('employees')
-    .select('id, last_name, first_name')
+    .select('id, last_name, first_name, workplaces(name)')
     .eq('punch_token', token)
     .eq('is_active', true)
     .is('deleted_at', null)
@@ -26,11 +26,13 @@ export default async function PunchByTokenPage({ params }: Props) {
 
   const snapshot = await loadTodaySnapshot(employee.id);
   const employeeName = `${employee.last_name} ${employee.first_name}`;
+  const workplaceName = employee.workplaces?.name;
 
   return (
-    <main className="flex min-h-svh items-center justify-center p-4">
+    <main className="flex min-h-svh items-center justify-center bg-employee-bg p-4">
       <PunchPanel
         employeeName={employeeName}
+        workplaceName={workplaceName}
         snapshot={snapshot}
         identifier={{ kind: 'token', token }}
       />

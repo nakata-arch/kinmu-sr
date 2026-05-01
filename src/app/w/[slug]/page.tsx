@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { clientEnv } from '@/lib/env';
 
 export const metadata = { title: '従業員一覧' };
 export const dynamic = 'force-dynamic';
@@ -31,26 +32,38 @@ export default async function WorkplaceListPage({ params }: Props) {
     .order('employee_code', { ascending: true });
 
   return (
-    <main className="mx-auto flex min-h-svh max-w-md flex-col p-4">
-      <div className="mb-6 text-center">
-        <h1 className="text-2xl font-bold">{workplace.name}</h1>
-        <p className="text-sm text-gray-500">打刻したい人を選んでください</p>
+    <main className="min-h-svh bg-page-bg">
+      {/* Brand strip */}
+      <header className="border-b border-line bg-white">
+        <div className="mx-auto max-w-md px-6 py-4 text-center">
+          <p className="font-mono text-[10px] tracking-[0.15em] text-shacho-accent">SHARED PC</p>
+          <h1 className="mt-1 font-serif text-2xl font-bold text-shacho">{workplace.name}</h1>
+          <p className="text-[11px] text-text-light">{clientEnv.NEXT_PUBLIC_BRAND_NAME} 勤怠管理</p>
+        </div>
+      </header>
+
+      {/* Body */}
+      <div className="mx-auto max-w-md px-6 py-8">
+        <p className="mb-4 text-center text-sm text-text-mid">打刻したい人を選んでください</p>
+        <ul className="space-y-2">
+          {(employees ?? []).map((e) => (
+            <li key={e.id}>
+              <Link
+                href={`/w/${slug}/${e.id}`}
+                className="flex items-center justify-between rounded-lg border border-line bg-white px-5 py-4 transition hover:border-shacho hover:shadow-sm"
+              >
+                <div>
+                  <span className="font-mono text-[11px] text-text-light">{e.employee_code}</span>
+                  <span className="ml-3 text-base font-semibold text-text-strong">
+                    {e.last_name} {e.first_name}
+                  </span>
+                </div>
+                <span className="text-shacho-accent">→</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
-      <ul className="space-y-2">
-        {(employees ?? []).map((e) => (
-          <li key={e.id}>
-            <Link
-              href={`/w/${slug}/${e.id}`}
-              className="block rounded border border-gray-200 px-4 py-3 text-base hover:border-gray-400 hover:bg-gray-50"
-            >
-              <span className="text-xs text-gray-500">{e.employee_code}</span>
-              <span className="ml-3 font-medium">
-                {e.last_name} {e.first_name}
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
     </main>
   );
 }

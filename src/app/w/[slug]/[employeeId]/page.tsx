@@ -17,7 +17,7 @@ export default async function SharedPCPunchPage({ params }: Props) {
 
   const { data: workplace } = await supabase
     .from('workplaces')
-    .select('id')
+    .select('id, name')
     .eq('slug', slug)
     .eq('is_active', true)
     .maybeSingle();
@@ -37,15 +37,16 @@ export default async function SharedPCPunchPage({ params }: Props) {
   const employeeName = `${employee.last_name} ${employee.first_name}`;
 
   return (
-    <main className="mx-auto flex min-h-svh max-w-md flex-col items-center justify-center gap-4 p-4">
+    <main className="flex min-h-svh flex-col items-center justify-center gap-4 bg-employee-bg p-4">
       <PunchPanel
         employeeName={employeeName}
+        workplaceName={workplace.name}
         snapshot={snapshot}
         identifier={{ kind: 'shared_pc', workplaceSlug: slug, employeeId }}
       />
       <Link
         href={`/w/${slug}`}
-        className="text-sm text-gray-500 underline-offset-2 hover:underline"
+        className="text-xs text-text-mid underline-offset-2 hover:underline"
       >
         ← 一覧に戻る
       </Link>

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Button } from '@/components/ui/button';
 import { login } from './actions';
 
 export function LoginForm() {
@@ -20,7 +19,7 @@ export function LoginForm() {
       className="space-y-4"
     >
       <div>
-        <label htmlFor="email" className="text-sm font-medium">
+        <label htmlFor="email" className="text-xs font-medium text-text-mid">
           メールアドレス
         </label>
         <input
@@ -29,11 +28,11 @@ export function LoginForm() {
           type="email"
           autoComplete="email"
           required
-          className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded border border-line px-3 py-2 text-sm text-text-strong outline-none focus:border-shacho focus:ring-2 focus:ring-shacho/20"
         />
       </div>
       <div>
-        <label htmlFor="password" className="text-sm font-medium">
+        <label htmlFor="password" className="text-xs font-medium text-text-mid">
           パスワード
         </label>
         <input
@@ -43,13 +42,17 @@ export function LoginForm() {
           autoComplete="current-password"
           required
           minLength={8}
-          className="mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded border border-line px-3 py-2 text-sm text-text-strong outline-none focus:border-shacho focus:ring-2 focus:ring-shacho/20"
         />
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      <Button type="submit" className="w-full" disabled={pending}>
+      {error && <p className="text-sm text-danger">{error}</p>}
+      <button
+        type="submit"
+        disabled={pending}
+        className="w-full rounded bg-shacho px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-shacho-accent disabled:cursor-not-allowed disabled:opacity-50"
+      >
         {pending ? '送信中…' : 'ログイン'}
-      </Button>
+      </button>
     </form>
   );
 }
