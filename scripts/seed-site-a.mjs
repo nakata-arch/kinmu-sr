@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// Seed: カムフラット社 (workplace) + 7 placeholder employees with
+// Seed: 事業所A (workplace, slug=site-a) + 7 placeholder employees with
 // freshly generated punch_tokens. Idempotent: re-running with employees
 // already present is a no-op (so you don't accidentally rotate tokens).
 //
-// Usage: node --env-file=.env.local scripts/seed-camuflat.mjs
+// Usage: node --env-file=.env.local scripts/seed-site-a.mjs
 
 import { createClient } from '@supabase/supabase-js';
 import { randomBytes } from 'node:crypto';
@@ -19,26 +19,26 @@ const supabase = createClient(url, secret, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
-console.log('1/4  Locating tenant ノース社労士…');
+console.log('1/4  Locating tenant 社労士A…');
 const { data: tenant, error: tenantErr } = await supabase
   .from('tenants')
   .select('id')
-  .eq('slug', 'north-sr')
+  .eq('slug', 'sr-a')
   .single();
 if (tenantErr || !tenant) {
-  console.error('No tenant with slug=north-sr. Run seed-initial.mjs first.');
+  console.error('No tenant with slug=sr-a. Run seed-initial.mjs first.');
   process.exit(1);
 }
 console.log(`     tenant.id = ${tenant.id}`);
 
-console.log('2/4  Upserting workplace カムフラット社 (slug=camuflat)…');
+console.log('2/4  Upserting workplace 事業所A (slug=site-a)…');
 const { data: workplace, error: wpErr } = await supabase
   .from('workplaces')
   .upsert(
     {
       tenant_id: tenant.id,
-      slug: 'camuflat',
-      name: 'カムフラット社',
+      slug: 'site-a',
+      name: '事業所A',
       bpo_plan: 'light',
       contract_start: '2026-04-01',
     },
@@ -59,7 +59,7 @@ const { count } = await supabase
   .eq('workplace_id', workplace.id);
 
 if ((count ?? 0) > 0) {
-  console.log(`     カムフラット社 already has ${count} employee(s). Skipping insert.`);
+  console.log(`     事業所A already has ${count} employee(s). Skipping insert.`);
   console.log('     (Delete or rotate tokens via the admin UI in Sprint 3.)');
   process.exit(0);
 }
@@ -97,7 +97,7 @@ console.log(`     Inserted ${inserted.length} employees.\n`);
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 console.log('=== Test URLs ===');
-console.log(`Shared PC: ${baseUrl}/w/camuflat\n`);
+console.log(`Shared PC: ${baseUrl}/w/site-a\n`);
 console.log('Personal mobile (per employee):');
 for (const e of inserted) {
   console.log(
