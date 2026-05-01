@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import Link from 'next/link';
 import { punchAction } from '@/lib/actions/punch';
 import { allowedPunches } from '@/domain/attendance/state';
 import type { AttendanceState, PunchType } from '@/domain/attendance/types';
@@ -14,6 +15,7 @@ const STATE_MESSAGE: Record<AttendanceState, string> = {
   done: '本日の打刻は終了しました',
 };
 
+// JST hour-based greeting
 function greetingFor(now: Date) {
   const hour = Number(
     new Intl.DateTimeFormat('ja-JP', { timeZone: 'Asia/Tokyo', hour: '2-digit', hour12: false }).format(now),
@@ -25,19 +27,17 @@ function greetingFor(now: Date) {
 
 interface Props {
   employeeName: string;
-  workplaceName?: string;
+  workplaceSlug: string;
+  employeeId: string;
   snapshot: TodayPunchSnapshot;
-  identifier:
-    | { kind: 'token'; token: string }
-    | { kind: 'shared_pc'; workplaceSlug: string; employeeId: string };
   initialNow: string; // ISO
 }
 
-export function PunchPanel({
+export function PunchDialog({
   employeeName,
-  workplaceName,
+  workplaceSlug,
+  employeeId,
   snapshot: initial,
-  identifier,
   initialNow,
 }: Props) {
   const [snapshot, setSnapshot] = useState<TodayPunchSnapshot>(initial);
@@ -50,12 +50,8 @@ export function PunchPanel({
     setError(null);
     const fd = new FormData();
     fd.append('type', type);
-    if (identifier.kind === 'token') {
-      fd.append('token', identifier.token);
-    } else {
-      fd.append('workplace_slug', identifier.workplaceSlug);
-      fd.append('employee_id', identifier.employeeId);
-    }
+    fd.append('workplace_slug', workplaceSlug);
+    fd.append('employee_id', employeeId);
     startTransition(async () => {
       const res = await punchAction(fd);
       if ('error' in res) setError(res.error);
@@ -64,31 +60,27 @@ export function PunchPanel({
   };
 
   return (
-    <div className="w-full max-w-sm overflow-hidden rounded-3xl border border-line bg-white shadow-md">
-      {/* Gradient employee header */}
-      <div className="bg-gradient-to-b from-employee to-employee-accent px-5 py-4 text-white">
-        <p className="text-[11px] opacity-85">{greeting}</p>
-        <p className="mt-0.5 text-lg font-bold">{employeeName} さん</p>
-        {workplaceName && <p className="text-[11px] opacity-80">{workplaceName}</p>}
-      </div>
+    <div className="w-full max-w-md rounded-2xl border border-line bg-white px-8 py-10 shadow-sm">
+      <p className="text-center text-sm text-text-mid">{greeting}</p>
+      <p className="mt-1 text-center text-2xl font-bold text-text-strong">
+        {employeeName} <span className="text-base font-medium text-text-mid">さん</span>
+      </p>
 
-      {/* Live clock */}
-      <div className="bg-page-bg px-5 py-6">
+      <div className="my-6">
         <ClockDisplay initialNow={initialNow} />
       </div>
 
-      {/* State + status rows */}
-      <div className="border-t border-line px-5 pt-3">
-        <p className="text-center text-xs text-text-mid">{STATE_MESSAGE[snapshot.state]}</p>
-        <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+      <p className="text-center text-xs text-text-mid">{STATE_MESSAGE[snapshot.state]}</p>
+
+      {(snapshot.clockInAt || snapshot.clockOutAt || snapshot.onBreakStartedAt) && (
+        <div className="mx-auto mt-3 grid max-w-xs grid-cols-3 gap-2 text-center">
           <Cell label="出勤" value={snapshot.clockInAt} />
           <Cell label="退勤" value={snapshot.clockOutAt} />
           <Cell label="休憩開始" value={snapshot.onBreakStartedAt} />
         </div>
-      </div>
+      )}
 
-      {/* Buttons */}
-      <div className="grid grid-cols-2 gap-3 p-5">
+      <div className="mt-6 grid grid-cols-2 gap-3">
         <ActionBtn
           big
           variant="success"
@@ -120,10 +112,18 @@ export function PunchPanel({
       </div>
 
       {error && (
-        <div className="border-t border-line bg-danger/5 px-4 py-3 text-center text-xs text-danger">
-          {error}
-        </div>
+        <p className="mt-4 text-center text-xs text-danger">{error}</p>
       )}
+
+      <p className="mt-6 text-center text-xs text-text-light">
+        違う方ですか？{' '}
+        <Link
+          href={`/w/${workplaceSlug}`}
+          className="text-employee-accent hover:text-employee"
+        >
+          → 戻る
+        </Link>
+      </p>
     </div>
   );
 }
@@ -152,7 +152,7 @@ function ActionBtn({
   onClick: () => void;
   big?: boolean;
 }) {
-  const sizing = big ? 'py-5 text-base' : 'py-2.5 text-sm';
+  const sizing = big ? 'py-6 text-lg' : 'py-3 text-sm';
   const styles =
     variant === 'success'
       ? 'bg-success text-white hover:bg-success/90 disabled:bg-line disabled:text-text-light'

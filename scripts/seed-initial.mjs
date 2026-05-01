@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// One-shot seed: create the first tenant (社労士A) and the first
+// One-shot seed: create the first tenant (A社労士) and the first
 // shacho user. Idempotent on tenant (UPSERT by slug); will fail loudly
 // if a user with the given email already exists in auth.users.
 //
@@ -31,14 +31,14 @@ const supabase = createClient(url, secret, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
-console.log('1/3  Creating tenant 社労士A…');
+console.log('1/3  Creating tenant A社労士…');
 const { data: tenant, error: tenantErr } = await supabase
   .from('tenants')
   .upsert(
     {
       slug: 'sr-a',
-      name: '社労士A',
-      brand_name: '社労士A',
+      name: 'A社労士',
+      brand_name: 'A社労士',
       primary_color: '#1F3A5F',
     },
     { onConflict: 'slug' },

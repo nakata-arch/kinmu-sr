@@ -3,7 +3,7 @@ import { z } from 'zod';
 const clientSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
-  NEXT_PUBLIC_BRAND_NAME: z.string().min(1).default('社労士A'),
+  NEXT_PUBLIC_BRAND_NAME: z.string().min(1).default('A社労士'),
   NEXT_PUBLIC_APP_URL: z.string().url().optional(),
 });
 

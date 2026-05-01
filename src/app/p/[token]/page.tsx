@@ -35,6 +35,7 @@ export default async function PunchByTokenPage({ params }: Props) {
         workplaceName={workplaceName}
         snapshot={snapshot}
         identifier={{ kind: 'token', token }}
+        initialNow={new Date().toISOString()}
       />
     </main>
   );

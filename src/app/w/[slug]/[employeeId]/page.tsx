@@ -1,7 +1,6 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { PunchPanel } from '@/components/employee/punch-panel';
+import { PunchDialog } from '@/components/employee/punch-dialog';
 import { loadTodaySnapshot } from '@/server/punch-state';
 
 export const metadata = { title: '打刻' };
@@ -37,19 +36,14 @@ export default async function SharedPCPunchPage({ params }: Props) {
   const employeeName = `${employee.last_name} ${employee.first_name}`;
 
   return (
-    <main className="flex min-h-svh flex-col items-center justify-center gap-4 bg-employee-bg p-4">
-      <PunchPanel
+    <main className="flex min-h-svh items-center justify-center bg-shacho-bg/60 px-4 py-10">
+      <PunchDialog
         employeeName={employeeName}
-        workplaceName={workplace.name}
+        workplaceSlug={slug}
+        employeeId={employeeId}
         snapshot={snapshot}
-        identifier={{ kind: 'shared_pc', workplaceSlug: slug, employeeId }}
+        initialNow={new Date().toISOString()}
       />
-      <Link
-        href={`/w/${slug}`}
-        className="text-xs text-text-mid underline-offset-2 hover:underline"
-      >
-        ← 一覧に戻る
-      </Link>
     </main>
   );
 }
