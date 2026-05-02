@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { clientEnv } from '@/lib/env';
 import { LogoutButton } from './logout-button';
 
 const ROLE_LABEL: Record<string, string> = {
@@ -19,12 +18,16 @@ export default async function HomePage() {
 
   if (!user) redirect('/login');
 
+  // Profile + tenant brand in one round-trip
   const { data: profile } = await supabase
     .from('users')
-    .select('display_name, role, tenant_id')
+    .select('display_name, role, tenant_id, tenants(brand_name)')
     .eq('id', user.id)
     .single();
 
+  const brandName = profile?.tenants?.brand_name ?? '勤怠管理システム';
+
+  // RLS scopes this to the user's tenant + workplace.
   const { data: workplaces } = await supabase
     .from('workplaces')
     .select('id, slug, name')
@@ -38,9 +41,7 @@ export default async function HomePage() {
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
           <div>
             <p className="font-mono text-[10px] tracking-[0.15em] text-shacho-accent">DASHBOARD</p>
-            <h1 className="font-serif text-2xl font-bold text-shacho">
-              {clientEnv.NEXT_PUBLIC_BRAND_NAME}
-            </h1>
+            <h1 className="font-serif text-2xl font-bold text-shacho">{brandName}</h1>
           </div>
           <div className="flex items-center gap-3 text-sm">
             <div className="text-right">
@@ -59,9 +60,7 @@ export default async function HomePage() {
         <section>
           <div className="mb-4 flex items-end justify-between border-b border-line pb-2">
             <h2 className="font-serif text-xl font-bold text-shacho">事業所</h2>
-            <span className="text-xs text-text-light">
-              {workplaces?.length ?? 0} 件
-            </span>
+            <span className="text-xs text-text-light">{workplaces?.length ?? 0} 件</span>
           </div>
 
           {workplaces && workplaces.length > 0 ? (
