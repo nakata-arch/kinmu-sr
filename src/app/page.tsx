@@ -76,16 +76,22 @@ export default async function HomePage() {
                       <div className="mt-1 font-mono text-xs text-text-light">/w/{w.slug}</div>
                     </div>
                   </div>
-                  <div className="mt-3 flex gap-2">
+                  <div className="mt-3 grid grid-cols-3 gap-2">
                     <Link
                       href={`/admin/${w.slug}/attendance`}
-                      className="flex-1 rounded bg-jigyosho px-3 py-2 text-center text-xs font-semibold text-white hover:bg-jigyosho-accent"
+                      className="rounded bg-jigyosho px-2 py-2 text-center text-xs font-semibold text-white hover:bg-jigyosho-accent"
                     >
                       勤怠管理
                     </Link>
                     <Link
+                      href={`/admin/${w.slug}/employees`}
+                      className="rounded border border-jigyosho px-2 py-2 text-center text-xs font-semibold text-jigyosho hover:bg-jigyosho/5"
+                    >
+                      従業員管理
+                    </Link>
+                    <Link
                       href={`/w/${w.slug}`}
-                      className="flex-1 rounded border border-line px-3 py-2 text-center text-xs font-semibold text-text-mid hover:border-text-light hover:text-text-strong"
+                      className="rounded border border-line px-2 py-2 text-center text-xs font-semibold text-text-mid hover:border-text-light hover:text-text-strong"
                     >
                       共有PC打刻
                     </Link>

@@ -171,7 +171,13 @@ export default async function AdminAttendancePage({ params, searchParams }: Prop
   const brandName = workplace.tenants?.brand_name ?? '';
 
   return (
-    <AdminShell brandName={brandName} workplaceName={workplace.name} user={user}>
+    <AdminShell
+      brandName={brandName}
+      workplaceName={workplace.name}
+      workplaceSlug={slug}
+      user={user}
+      currentSection="attendance"
+    >
       {/* Breadcrumb */}
       <p className="mb-3 text-xs text-text-light">
         <Link href="/" className="hover:underline">ダッシュボード</Link>

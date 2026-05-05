@@ -14,20 +14,31 @@ const ROLE_BADGE: Record<AdminContext['role'], string> = {
   bizpla_bpo: 'BPO',
 };
 
+export type AdminSection = 'attendance' | 'employees' | 'settings';
+
+const TABS: { id: AdminSection; label: string; href: (slug: string) => string }[] = [
+  { id: 'attendance', label: '勤怠管理', href: (s) => `/admin/${s}/attendance` },
+  { id: 'employees',  label: '従業員管理', href: (s) => `/admin/${s}/employees` },
+];
+
 export function AdminShell({
   brandName,
   workplaceName,
+  workplaceSlug,
   user,
+  currentSection,
   children,
 }: {
   brandName: string;
   workplaceName: string;
+  workplaceSlug: string;
   user: AdminContext;
+  currentSection: AdminSection;
   children: React.ReactNode;
 }) {
   return (
     <div className="min-h-svh bg-page-bg">
-      {/* Top bar (jigyosho color per mockup) */}
+      {/* Top bar */}
       <header className="bg-jigyosho text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
           <div className="flex items-baseline gap-2">
@@ -47,6 +58,26 @@ export function AdminShell({
             <LogoutButton />
           </div>
         </div>
+
+        {/* Tab nav */}
+        <nav className="mx-auto flex max-w-6xl gap-1 px-6">
+          {TABS.map((t) => {
+            const active = t.id === currentSection;
+            return (
+              <Link
+                key={t.id}
+                href={t.href(workplaceSlug)}
+                className={
+                  active
+                    ? 'border-b-2 border-white px-4 py-2 text-sm font-semibold text-white'
+                    : 'border-b-2 border-transparent px-4 py-2 text-sm text-white/70 hover:text-white'
+                }
+              >
+                {t.label}
+              </Link>
+            );
+          })}
+        </nav>
       </header>
 
       <main className="mx-auto max-w-6xl px-6 py-6">{children}</main>
