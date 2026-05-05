@@ -66,30 +66,36 @@ export default async function HomePage() {
           {workplaces && workplaces.length > 0 ? (
             <ul className="grid gap-3 sm:grid-cols-2">
               {workplaces.map((w) => (
-                <li key={w.id}>
-                  <Link
-                    href={`/w/${w.slug}`}
-                    className="block rounded-lg border border-line bg-white px-5 py-4 transition hover:border-shacho hover:shadow-sm"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-base font-semibold text-text-strong">{w.name}</div>
-                        <div className="mt-1 font-mono text-xs text-text-light">/w/{w.slug}</div>
-                      </div>
-                      <span className="text-xs text-shacho-accent">→</span>
+                <li
+                  key={w.id}
+                  className="rounded-lg border border-line bg-white px-5 py-4 transition hover:border-shacho hover:shadow-sm"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-base font-semibold text-text-strong">{w.name}</div>
+                      <div className="mt-1 font-mono text-xs text-text-light">/w/{w.slug}</div>
                     </div>
-                    <p className="mt-2 text-xs text-text-mid">共有PC打刻ページを開く</p>
-                  </Link>
+                  </div>
+                  <div className="mt-3 flex gap-2">
+                    <Link
+                      href={`/admin/${w.slug}/attendance`}
+                      className="flex-1 rounded bg-jigyosho px-3 py-2 text-center text-xs font-semibold text-white hover:bg-jigyosho-accent"
+                    >
+                      勤怠管理
+                    </Link>
+                    <Link
+                      href={`/w/${w.slug}`}
+                      className="flex-1 rounded border border-line px-3 py-2 text-center text-xs font-semibold text-text-mid hover:border-text-light hover:text-text-strong"
+                    >
+                      共有PC打刻
+                    </Link>
+                  </div>
                 </li>
               ))}
             </ul>
           ) : (
             <p className="text-sm text-text-mid">事業所が登録されていません。</p>
           )}
-
-          <p className="mt-4 text-xs text-text-light">
-            ※ 勤怠一覧・修正画面は Sprint 3 で順次追加予定
-          </p>
         </section>
       </div>
     </main>
