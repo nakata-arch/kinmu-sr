@@ -23,6 +23,9 @@ export interface AdminContext {
  */
 export async function requireAdmin(opts?: {
   workplaceSlug?: string;
+  /** Restrict to a subset of management roles (e.g. ['shacho','bizpla_bpo']
+   *  for org-wide-only screens like payroll). */
+  rolesAllowed?: AdminContext['role'][];
 }): Promise<AdminContext> {
   const supabase = await createClient();
   const {
@@ -40,6 +43,10 @@ export async function requireAdmin(opts?: {
 
   const allowed: UserRole[] = ['shacho', 'workplace_admin', 'bizpla_bpo'];
   if (!allowed.includes(profile.role)) redirect('/');
+
+  if (opts?.rolesAllowed && !opts.rolesAllowed.includes(profile.role as AdminContext['role'])) {
+    redirect('/');
+  }
 
   // workplace_admin scoped to specific workplace
   if (opts?.workplaceSlug && profile.role === 'workplace_admin') {

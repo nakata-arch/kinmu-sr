@@ -14,11 +14,25 @@ const ROLE_BADGE: Record<AdminContext['role'], string> = {
   bizpla_bpo: 'BPO',
 };
 
-export type AdminSection = 'attendance' | 'employees' | 'settings';
+export type AdminSection = 'attendance' | 'employees' | 'payroll' | 'settings';
 
-const TABS: { id: AdminSection; label: string; href: (slug: string) => string }[] = [
-  { id: 'attendance', label: '勤怠管理', href: (s) => `/admin/${s}/attendance` },
+interface TabSpec {
+  id: AdminSection;
+  label: string;
+  href: (slug: string) => string;
+  /** Roles that can see this tab. Undefined → everyone. */
+  rolesAllowed?: AdminContext['role'][];
+}
+
+const TABS: TabSpec[] = [
+  { id: 'attendance', label: '勤怠管理',  href: (s) => `/admin/${s}/attendance` },
   { id: 'employees',  label: '従業員管理', href: (s) => `/admin/${s}/employees` },
+  {
+    id: 'payroll',
+    label: '給与計算',
+    href: (s) => `/admin/${s}/payroll`,
+    rolesAllowed: ['shacho', 'bizpla_bpo'],
+  },
 ];
 
 export function AdminShell({
@@ -36,9 +50,12 @@ export function AdminShell({
   currentSection: AdminSection;
   children: React.ReactNode;
 }) {
+  const visibleTabs = TABS.filter(
+    (t) => !t.rolesAllowed || t.rolesAllowed.includes(user.role),
+  );
+
   return (
     <div className="min-h-svh bg-page-bg">
-      {/* Top bar */}
       <header className="bg-jigyosho text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
           <div className="flex items-baseline gap-2">
@@ -59,9 +76,8 @@ export function AdminShell({
           </div>
         </div>
 
-        {/* Tab nav */}
         <nav className="mx-auto flex max-w-6xl gap-1 px-6">
-          {TABS.map((t) => {
+          {visibleTabs.map((t) => {
             const active = t.id === currentSection;
             return (
               <Link
