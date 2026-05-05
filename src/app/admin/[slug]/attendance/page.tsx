@@ -110,6 +110,7 @@ export default async function AdminAttendancePage({ params, searchParams }: Prop
   type DisplayRow = {
     id: string;
     employeeId: string;
+    workDateRaw: string;
     employeeCode: string;
     employeeName: string;
     workDate: string;
@@ -136,6 +137,7 @@ export default async function AdminAttendancePage({ params, searchParams }: Prop
     return {
       id: r.id,
       employeeId: r.employee_id,
+      workDateRaw: r.work_date,
       employeeCode: emp?.employee_code ?? '—',
       employeeName: emp ? `${emp.last_name} ${emp.first_name}` : '（不明）',
       workDate: formatInTimeZone(dateObj, TZ, 'MM/dd'),
@@ -294,13 +296,12 @@ export default async function AdminAttendancePage({ params, searchParams }: Prop
                       </span>
                     </td>
                     <td className="px-3 py-2 text-right">
-                      <button
-                        type="button"
-                        title="Sprint 3-2で実装予定"
-                        className="cursor-not-allowed rounded border border-line bg-white px-2 py-1 text-[11px] text-text-light"
+                      <Link
+                        href={`/admin/${slug}/attendance/edit?employee=${r.employeeId}&date=${r.workDateRaw}`}
+                        className="rounded border border-line bg-white px-2 py-1 text-[11px] text-jigyosho hover:border-jigyosho hover:bg-jigyosho/5"
                       >
                         修正
-                      </button>
+                      </Link>
                     </td>
                   </tr>
                 );
