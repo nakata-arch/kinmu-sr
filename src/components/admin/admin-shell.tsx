@@ -33,6 +33,12 @@ const TABS: TabSpec[] = [
     href: (s) => `/admin/${s}/payroll`,
     rolesAllowed: ['shacho', 'bizpla_bpo'],
   },
+  {
+    id: 'settings',
+    label: 'ルール設定',
+    href: (s) => `/admin/${s}/rules`,
+    rolesAllowed: ['shacho', 'bizpla_bpo'],
+  },
 ];
 
 export function AdminShell({

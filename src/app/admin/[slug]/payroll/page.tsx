@@ -7,6 +7,7 @@ import { AdminShell } from '@/components/admin/admin-shell';
 import { TZ } from '@/lib/datetime';
 import { formatHHMM } from '@/domain/attendance/calc';
 import { loadPayrollMonth } from '@/server/payroll-loader';
+import { FinalizeSection } from './finalize-section';
 
 export const metadata = { title: '給与計算' };
 export const dynamic = 'force-dynamic';
@@ -65,6 +66,22 @@ export default async function PayrollPage({ params, searchParams }: Props) {
     e.result.alerts.some((a) => a.severity === 'warning'),
   ).length;
 
+  // Finalized state lookup
+  const monthFirstDay = `${monthValue}-01`;
+  const { data: existingRun } = await supabase
+    .from('payroll_runs')
+    .select('status, finalized_at, finalized_by, users:finalized_by(display_name)')
+    .eq('workplace_id', wpHeader.id)
+    .eq('target_month', monthFirstDay)
+    .maybeSingle();
+  const finalizedInfo =
+    existingRun?.status === 'finalized' && existingRun.finalized_at
+      ? {
+          finalizedAt: formatInTimeZone(new Date(existingRun.finalized_at), TZ, 'yyyy-MM-dd HH:mm'),
+          finalizedBy: existingRun.users?.display_name ?? '（不明）',
+        }
+      : null;
+
   const brandName = wpHeader.tenants?.brand_name ?? '';
 
   return (
@@ -102,14 +119,6 @@ export default async function PayrollPage({ params, searchParams }: Props) {
           >
             CSV出力
           </a>
-          <button
-            type="button"
-            disabled
-            title="次回スプリントで実装予定"
-            className="cursor-not-allowed rounded border border-line bg-white px-3 py-1.5 text-text-light"
-          >
-            最終確定（社労士のみ）
-          </button>
         </div>
       </div>
 
@@ -134,6 +143,18 @@ export default async function PayrollPage({ params, searchParams }: Props) {
           適用
         </button>
       </form>
+
+      {/* Finalize section */}
+      <div className="mb-5">
+        <FinalizeSection
+          workplaceSlug={slug}
+          monthYmd={monthValue}
+          monthLabel={monthLabel}
+          finalized={finalizedInfo}
+          hasDangerAlerts={dangerCount > 0}
+          canFinalize={admin.role === 'shacho'}
+        />
+      </div>
 
       {/* Stats */}
       <div className="mb-5 grid grid-cols-3 gap-3">

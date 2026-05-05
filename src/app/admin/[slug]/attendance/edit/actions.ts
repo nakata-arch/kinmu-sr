@@ -93,6 +93,13 @@ export async function saveAttendance(raw: unknown): Promise<SaveResult> {
       .select('clock_in_at, clock_out_at, break_minutes, absence_type, note, status')
       .eq('id', recordId)
       .maybeSingle();
+
+    if (before?.status === 'finalized' || before?.status === 'locked') {
+      return {
+        error: 'この勤怠は給与計算で確定済み（またはロック中）のため編集できません。',
+      };
+    }
+
     beforeValue = before;
 
     const { error: updErr } = await supabase
