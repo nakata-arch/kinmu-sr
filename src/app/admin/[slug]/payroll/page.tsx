@@ -113,6 +113,12 @@ export default async function PayrollPage({ params, searchParams }: Props) {
           </p>
         </div>
         <div className="flex gap-2 text-xs">
+          <Link
+            href={`/admin/${slug}/payroll/history`}
+            className="rounded border border-line bg-white px-3 py-1.5 text-text-mid hover:border-text-light hover:text-text-strong"
+          >
+            履歴
+          </Link>
           <a
             href={`/api/export/csv?slug=${slug}&month=${monthValue}`}
             className="rounded border border-line bg-white px-3 py-1.5 text-jigyosho hover:border-jigyosho hover:bg-jigyosho/5"
