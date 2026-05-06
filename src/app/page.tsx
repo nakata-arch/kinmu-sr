@@ -54,6 +54,14 @@ export default async function HomePage() {
             <h1 className="font-serif text-2xl font-bold text-shacho">{brandName}</h1>
           </div>
           <div className="flex items-center gap-3 text-sm">
+            {(profile?.role === 'shacho' || profile?.role === 'bizpla_bpo') && (
+              <Link
+                href="/master/users"
+                className="rounded border border-line px-3 py-1.5 text-xs text-text-mid hover:border-text-light hover:text-text-strong"
+              >
+                ユーザー管理
+              </Link>
+            )}
             <div className="text-right">
               <div className="font-medium">{profile?.display_name ?? user.email}</div>
               <div className="text-xs text-text-light">
